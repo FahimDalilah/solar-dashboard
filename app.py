@@ -31,8 +31,8 @@ def load_artifacts():
     if missing:
         raise FileNotFoundError("Missing: " + ", ".join(missing) + ". Run training scripts first.")
 
-    lgb_model = joblib.load(LGB_PATH)
-    tcn_model = tf.keras.models.load_model(TCN_PATH, compile=False)
+    lgb_model = load_lgb()
+    tcn_model = load_tcn()
     scaler = joblib.load(SCALER_PATH)
     feature_cols = joblib.load(FEATS_PATH)
     window = int(joblib.load(WINDOW_PATH))
