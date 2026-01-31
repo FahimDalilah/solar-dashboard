@@ -31,17 +31,17 @@ def load_artifacts():
     if missing:
         raise FileNotFoundError("Missing: " + ", ".join(missing) + ". Run training scripts first.")
 
-    lgb_model = load_lgb()
-    tcn_model = load_tcn()
-    scaler = joblib.load(SCALER_PATH)
-    feature_cols = joblib.load(FEATS_PATH)
-    window = int(joblib.load(WINDOW_PATH))
+    lgb_model = joblib.load("models/best_lightgbm_hybrid_tuned.pkl")
+    tcn_model = load_model("models/best_tcn_hybrid.h5")
+    scaler = joblib.load("models/tcn_scaler.pkl")
+    feature_cols = joblib.load("models/feature_cols.pkl")
+    SEQ_LENGTH = joblib.load("models/tcn_window.pkl")
 
-    return lgb_model, tcn_model, scaler, feature_cols, window
+    return lgb_model, tcn_model, scaler, feature_cols, SEQ_LENGTH
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv(DATA_PATH)
+    df = pd.read_csv("data/engineered_solar_data.csv")
     df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
     df = df.dropna(subset=["Timestamp"]).sort_values("Timestamp").reset_index(drop=True)
     return df
