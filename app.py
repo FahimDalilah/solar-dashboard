@@ -6,15 +6,11 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from pathlib import Path
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from tensorflow.keras.models import load_model
 
 st.set_page_config(page_title="Solar Energy Forecasting", layout="wide")
 
-DATA_PATH   = Path("engineered_solar_data.csv")
-LGB_PATH    = Path("best_lightgbm_hybrid_tuned.pkl")
-TCN_PATH    = Path("best_tcn_hybrid.h5")
-SCALER_PATH = Path("tcn_scaler.pkl")
-FEATS_PATH  = Path("feature_cols.pkl")
-WINDOW_PATH = Path("tcn_window.pkl")
+DATA_PATH   = "data/engineered_solar_data_dashboard.csv"
 
 TARGET_COL = "SolarGeneration"
 
@@ -26,10 +22,24 @@ def create_sequences(X: np.ndarray, y: np.ndarray, window: int):
     return np.array(Xs), np.array(ys)
 
 @st.cache_resource
-def load_artifacts():
-    missing = [p.name for p in [DATA_PATH, LGB_PATH, TCN_PATH, SCALER_PATH, FEATS_PATH, WINDOW_PATH] if not p.exists()]
-    if missing:
-        raise FileNotFoundError("Missing: " + ", ".join(missing) + ". Run training scripts first.")
+def load_lgb():
+    return joblib.load("models/best_lightgbm_hybrid_tuned.pkl")
+
+@st.cache_resource
+def load_feature_cols():
+    return joblib.load("models/feature_cols.pkl")
+
+@st.cache_resource
+def load_tcn_window():
+    return int(joblib.load("models/tcn_window.pkl"))
+
+@st.cache_resource
+def load_tcn_scaler():
+    return joblib.load("models/tcn_scaler.pkl")
+
+@st.cache_resource
+def load_tcn():
+    return load_model("models/best_tcn_hybrid.h5")
 
     lgb_model = joblib.load("models/best_lightgbm_hybrid_tuned.pkl")
     tcn_model = load_model("models/best_tcn_hybrid.h5")
