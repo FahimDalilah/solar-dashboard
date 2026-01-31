@@ -10,7 +10,7 @@ from tensorflow.keras.models import load_model
 
 st.set_page_config(page_title="Solar Energy Forecasting", layout="wide")
 
-DATA_PATH   = "data/engineered_solar_data_dashboard.csv"
+DATA_PATH  = "data/engineered_solar_data_dashboard.csv"
 
 TARGET_COL = "SolarGeneration"
 
@@ -60,7 +60,7 @@ st.title("🌞 Solar Energy Forecasting Dashboard")
 st.markdown("**Hybrid Feature Engineering | LightGBM vs TCN**")
 
 try:
-    lgb_model, tcn_model, scaler, FEATURE_COLS, SEQ_LENGTH = load_artifacts()
+    lgb_model, tcn_model, scaler, FEATURE_COLS, SEQ_LENGTH
 except Exception as e:
     st.error(str(e))
     st.stop()
