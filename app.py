@@ -22,7 +22,7 @@ def create_sequences(X: np.ndarray, y: np.ndarray, window: int):
 
 @st.cache_resource
 def load_lgb():
-    return joblib.load("models/best_lightgbm_hybrid_tuned.pkl")
+    return load_model("models/best_lightgbm_hybrid_tuned.pkl")
 
 @st.cache_resource
 def load_feature_cols():
@@ -40,7 +40,7 @@ def load_tcn_scaler():
 def load_tcn():
     return load_model("models/best_tcn_hybrid.h5")
 
-    lgb_model = joblib.load("models/best_lightgbm_hybrid_tuned.pkl")
+    lgb_model = load_model("models/best_lightgbm_hybrid_tuned.pkl")
     tcn_model = load_model("models/best_tcn_hybrid.h5")
     scaler = joblib.load("models/tcn_scaler.pkl")
     feature_cols = joblib.load("models/feature_cols.pkl")
