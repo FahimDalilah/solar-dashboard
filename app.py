@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from tensorflow.keras.models import load_model
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 st.set_page_config(page_title="Solar Energy Forecasting", layout="wide")
 
 DATA_PATH  = "data/engineered_solar_data_dashboard.csv"
@@ -21,8 +23,8 @@ def create_sequences(X: np.ndarray, y: np.ndarray, window: int):
     return np.array(Xs), np.array(ys)
 
 @st.cache_resource
-def load_lgb():
-    return load_model("models/best_lightgbm_hybrid_tuned.pkl")
+def load_lgb_model():
+    return joblib.load("models/best_lightgbm_hybrid_tuned.pkl")
 
 @st.cache_resource
 def load_feature_cols():
@@ -40,10 +42,10 @@ def load_tcn_scaler():
 def load_tcn():
     return load_model("models/best_tcn_hybrid.h5")
 
-    lgb_model = load_model("models/best_lightgbm_hybrid_tuned.pkl")
+    lgb_model = load_lgb_model()
     tcn_model = load_model("models/best_tcn_hybrid.h5")
     scaler = joblib.load("models/tcn_scaler.pkl")
-    feature_cols = joblib.load("models/feature_cols.pkl")
+    FEATURE_COLS = load_feature_cols()
     SEQ_LENGTH = joblib.load("models/tcn_window.pkl")
 
     return lgb_model, tcn_model, scaler, feature_cols, SEQ_LENGTH
@@ -88,7 +90,10 @@ y_train, y_test = y[:split_idx], y[split_idx:]
 ts_test = ts[split_idx:]
 
 # ---- LightGBM preds ----
-lgb_preds = lgb_model.predict(X_test)
+X = df[FEATURE_COLS]
+lgb_preds = lgb_model.predict(X)
+
+st.success("LightGBM predictions generated successfully")
 
 # ---- TCN preds (IMPORTANT: transform only) ----
 # ---------- TCN predictions (SAFE SHAPES) ----------
